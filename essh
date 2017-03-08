@@ -1,0 +1,54 @@
+#!/bin/bash
+
+function help {
+  echo "usage:"
+  echo " ${0} env_name [-p]"
+  exit 1
+}
+
+if [ $# = 0 ]; then
+  help
+fi
+
+ENV_NAME="$1"
+shift
+PORT=22
+PARAMS=""
+
+while [ $# -gt 0 ]; do
+  if [ "$1" = "-p" ]; then
+    PARAMS="true"
+  fi
+  shift
+done
+
+ENV_FILE_NAME=".env.srv"
+
+ENV_FILE=`grep "^[^#;]" ${ENV_FILE_NAME}`
+IFS=$'\n'
+ENV_ENTRIES=(${ENV_FILE})
+IFS=' '
+
+for ENV in "${ENV_ENTRIES[@]}"
+do
+  ENTRY=(${ENV})
+  if [ "${ENTRY[1]}" = "${ENV_NAME}" ]; then
+    if [ "${ENTRY[4]}" != "" ]; then
+      PORT=${ENTRY[4]}
+    fi
+    if [ "${PARAMS}" != "" ]; then
+      if [ "${ENTRY[5]}" = "" ]; then
+        echo "Parameters for ${ENV} not specifiled in ${ENV_FILE_NAME}!"
+        exit 3
+      fi
+    fi
+    echo ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
+    ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
+    exit 0
+  fi
+done
+
+echo Environment not found!
+
+exit 2
+

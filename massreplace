@@ -1,0 +1,27 @@
+#!/bin/bash
+
+VERSION="0.1"
+
+function help
+{
+	echo "Simple mass replace script by krzysztof.gorecki@comarch.com"
+	echo "Replaces every occurence of <string1> with <string2>."
+	echo "Script recoursively searches files starting from current directory."
+	echo "File types handling might be added in future versions."
+	echo "Same as error handling."
+	echo "version $VERSION"
+	echo "Usage: "
+	echo " $(basename $0) <string1> <string2>"
+	exit
+}
+
+if [ $# -lt 2 ]; then
+	help
+fi
+
+PLIKI=`grep -r -l ${1} *`
+for curfile in $PLIKI
+do
+	sed s/${1}/${2}/g $curfile > tmpfile
+	mv tmpfile $curfile
+done

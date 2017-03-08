@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "${1}" != "" ]
+then
+  echo 'eval "$(docker-machine env '${1}')"'
+  eval "$(docker-machine env ${1})"
+else
+  echo "Empty docker-machine name, listing machines"
+  docker-machine ls
+  exit -1
+fi
+
+ENV_RES=`env | grep DOCKER_MACHINE_NAME`
+IFS='='
+KEY_VALUE=($ENV_RES)
+
+if [ "${1}" != "${KEY_VALUE[1]}" ]
+then
+  echo "parameter: _${1}_"
+  echo "value: _${KEY_VALUE[1]}_"
+  echo "did you forgot to source file?"
+  echo "usage: . ${0} [machine_name]"
+else
+  echo "using machine ${1}"
+fi
+

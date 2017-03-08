@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ 0 = `synclient | grep TouchpadOff | awk {'print $3'}` ]; then
+	synclient touchpadoff=1
+else
+	synclient touchpadoff=0
+fi
