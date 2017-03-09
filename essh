@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# todo: ping
+# print list
+# change & to whitespace at ENV_FILE_NAME
+
 function help {
   echo "usage:"
   echo " ${0} env_name [-p]"
