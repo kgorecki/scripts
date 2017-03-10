@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # todo: ping
-# print list
 # change & to whitespace at ENV_FILE_NAME
 
 function help {
@@ -10,22 +9,38 @@ function help {
   exit 1
 }
 
+function print_envs {
+  if [ $# -gt 0 ]; then
+    grep "$1" ${ENV_FILE_NAME}
+  else
+    cat ${ENV_FILE_NAME}
+  fi
+  exit 0
+}
+
 if [ $# = 0 ]; then
   help
 fi
 
-ENV_NAME="$1"
-shift
 PORT=22
 PARAMS=""
+PRINT=""
 ENV_FILE_NAME="${HOME}/bin/.env.srv"
 
 while [ $# -gt 0 ]; do
   if [ "$1" = "-p" ]; then
     PARAMS="true"
+  elif [ "$1" = "print" ]; then
+    PRINT="true"
+  else
+    ENV_NAME="$1"
   fi
   shift
 done
+
+if [ "${PRINT}" != "" ]; then
+  print_envs ${ENV_NAME}
+fi
 
 ENV_FILE=`grep "^[^#;]" ${ENV_FILE_NAME}`
 IFS=$'\n'
