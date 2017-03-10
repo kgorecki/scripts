@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# todo: ping
 # change & to whitespace at ENV_FILE_NAME
 
 function help {
@@ -25,6 +24,7 @@ fi
 PORT=22
 PARAMS=""
 PRINT=""
+PING=""
 ENV_FILE_NAME="${HOME}/bin/.env.srv"
 
 while [ $# -gt 0 ]; do
@@ -32,8 +32,13 @@ while [ $# -gt 0 ]; do
     PARAMS="true"
   elif [ "$1" = "print" ]; then
     PRINT="true"
-  else
+  elif [ "$1" = "ping" ]; then
+    PING="true"
+  elif [ "${ENV_NAME}" = "" ]; then
     ENV_NAME="$1"
+  else
+    echo "Check parameters!"
+    help
   fi
   shift
 done
@@ -60,8 +65,13 @@ do
         exit 3
       fi
     fi
-    echo ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
-    ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
+    if [ "${PING}" = "" ]; then
+      echo ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
+      ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
+    else
+      echo ping "${ENTRY[2]}"
+      ping "${ENTRY[2]}"
+    fi
     exit 0
   fi
 done
