@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# change & to whitespace at ENV_FILE_NAME
+# TODO:
+# imrpove help
+# improve iterate through environments
 
 function help {
   echo "usage:"
-  echo " ${0} env_name [-p]"
+  echo " $(basename $0) [env_name [-p] | print [env_name] | ping env_name]"
   exit 1
 }
 
@@ -27,12 +29,21 @@ PRINT=""
 PING=""
 ENV_FILE_NAME="${HOME}/bin/.env.srv"
 
+# iterate through parameters
 while [ $# -gt 0 ]; do
   if [ "$1" = "-p" ]; then
     PARAMS="true"
   elif [ "$1" = "print" ]; then
+    if [ ! -z "${PING}" ]; then
+      echo "Can't use print and ping at the same time!"
+      help
+    fi
     PRINT="true"
   elif [ "$1" = "ping" ]; then
+    if [ ! -z "${PRINT}" ]; then
+      echo "Can't use print and ping at the same time!"
+      help
+    fi
     PING="true"
   elif [ "${ENV_NAME}" = "" ]; then
     ENV_NAME="$1"
@@ -43,7 +54,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [ "${PRINT}" != "" ]; then
+if [ ! -z "${PRINT}" ]; then
   print_envs ${ENV_NAME}
 fi
 
@@ -52,22 +63,24 @@ IFS=$'\n'
 ENV_ENTRIES=(${ENV_FILE})
 IFS=' '
 
+# iterate through environments
 for ENV in "${ENV_ENTRIES[@]}"
 do
   ENTRY=(${ENV})
   if [ "${ENTRY[1]}" = "${ENV_NAME}" ]; then
-    if [ "${ENTRY[4]}" != "" ]; then
+    if [ ! -z "${ENTRY[4]}" ]; then
       PORT=${ENTRY[4]}
     fi
-    if [ "${PARAMS}" != "" ]; then
-      if [ "${ENTRY[5]}" = "" ]; then
+    if [ ! -z "${PARAMS}" ]; then
+      if [ -z "${ENTRY[5]}" ]; then
         echo "Parameters for ${ENV} not specifiled in ${ENV_FILE_NAME}!"
         exit 3
       fi
+      PARAMS="${ENTRY[5]}"
     fi
-    if [ "${PING}" = "" ]; then
-      echo ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
-      ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS}
+    if [ -z "${PING}" ]; then
+      echo ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS/'&'/' '}
+      ssh "${ENTRY[3]}"@"${ENTRY[2]}" -p ${PORT} ${PARAMS/'&'/' '}
     else
       echo ping "${ENTRY[2]}"
       ping "${ENTRY[2]}"
