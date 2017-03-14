@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# TODO:
+# regenerate certificated if needed
+# normal arguments parsing
+
+function help
+{
+  echo "Few useful things for forgetful / lazy Docker users"
+  echo "Usage:"
+  echo " . $(basename $0) machine_name - switch to docker-machine machine_name content"
+  echo " $(basename $0) which          - prints currently used docker-machine"
+  echo " $(basename $0)                - runs: docker-machine ls"
+  exit 0
+}
+
 if [ "${1}" = "which" ]; then
   denv_res=`env | grep DOCKER_MACHINE_NAME`
   IFS='='
@@ -8,11 +22,16 @@ if [ "${1}" = "which" ]; then
   exit 0
 fi
 
+if [ "${1}" = "help" ]; then
+  help
+fi
+
 if [ "${1}" != "" ]; then
   echo 'eval "$(docker-machine env '${1}')"'
   eval "$(docker-machine env ${1})"
 else
   echo "Empty docker-machine name, listing machines"
+  echo "For help type: $(basename $0) help"
   docker-machine ls
   exit -1
 fi
