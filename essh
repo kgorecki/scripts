@@ -3,10 +3,13 @@
 # TODO:
 # imrpove help
 # improve iterate through environments
+# make use of alternative env file possible
 
 function help {
-  echo "usage:"
+  echo "Usage:"
   echo " $(basename $0) [env_name [-p] | print [env_name] | ping env_name]"
+  echo;
+  echo "Sample configuration file: env.srv"
   exit 1
 }
 
@@ -28,6 +31,11 @@ PARAMS=""
 PRINT=""
 PING=""
 ENV_FILE_NAME="${HOME}/bin/.env.srv"
+
+if [ ! -f "${ENV_FILE_NAME}" ]; then
+  echo "Can't find configuration file: ${ENV_FILE_NAME}"
+  exit -1
+fi
 
 # iterate through parameters
 while [ $# -gt 0 ]; do
@@ -74,7 +82,7 @@ do
     if [ ! -z "${PARAMS}" ]; then
       if [ -z "${ENTRY[5]}" ]; then
         echo "Parameters for ${ENV} not specifiled in ${ENV_FILE_NAME}!"
-        exit 3
+        exit -3
       fi
       PARAMS="${ENTRY[5]}"
     fi
@@ -91,5 +99,5 @@ done
 
 echo Environment not found!
 
-exit 2
+exit -2
 
