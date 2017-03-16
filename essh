@@ -6,10 +6,16 @@
 # make use of alternative env file possible
 
 function help {
+  echo "Another layer added on top of ssh/ping for faster operation on known servers"
   echo "Usage:"
   echo " $(basename $0) [env_name [-p] | print [env_name] | ping env_name]"
   echo;
+  echo "Examples:"
+  echo " $(basename $0) print group  - prints every entry for group"
+  echo " $(basename $0) router -p    - connects to host router with use of additional parameters"
+  echo;
   echo "Sample configuration file: env.srv"
+  echo "Advantage over ~/.ssh/config or /etc/hosts - it's easier to store i.e. on Dropbox and use the same for every computer you use."
   exit 1
 }
 
