@@ -4,18 +4,37 @@
 # imrpove help
 # improve iterate through environments
 # make use of alternative env file possible
+# switch to use reasonable hosts format: user@hostname:port
+# improve checking if entry is present in env file
+
+PORT=22
+PARAMS=""
+PRINT=""
+PING=""
+GROUP=""
+ENV_NAME=""
+USER=`whoami`
+HOST=""
+PORT=""
+PARAMS=""
+ENV_FILE_NAME="${HOME}/bin/.env.srv"
 
 function help {
   echo "Another layer added on top of ssh/ping for faster operation on known servers"
   echo "Usage:"
-  echo " $(basename $0) [env_name [-p] | print [env_name] | ping env_name]"
+  echo " $(basename $0) env_name [-p]"
+  echo " $(basename $0) print [env_name]"
+  echo " $(basename $0) ping env_name"
+  echo " $(basename $0) add -g group -n name -h hostname [-u username] [-p port] [-P params]"
   echo;
   echo "Examples:"
-  echo " $(basename $0) print group  - prints every entry for group"
+  echo " $(basename $0) print home   - prints every entry for group 'home'"
   echo " $(basename $0) router -p    - connects to host router with use of additional parameters"
   echo;
   echo "Sample configuration file: env.srv"
   echo "Advantage over ~/.ssh/config or /etc/hosts - it's easier to store i.e. on Dropbox and use the same for every computer you use."
+  echo "Default port - 22"
+  echo "Default user - `whoami` - currently logged in"
   exit 1
 }
 
@@ -28,15 +47,55 @@ function print_envs {
   exit 0
 }
 
+function add_env_iterate {
+  while [ $# -gt 0 ]; do
+    if [ "$1" = "-g" ]; then
+      shift
+      GROUP="$1"
+    elif [ "$1" = "-n" ]; then
+      shift
+      ENV_NAME="$1"
+    elif [ "$1" = "-u" ]; then
+      shift
+      USER="$1"
+    elif [ "$1" = "-h" ]; then
+      shift
+      HOST="$1"
+    elif [ "$1" = "-p" ]; then
+      shift
+      PORT="$1"
+    elif [ "$1" = "-P" ]; then
+      shift
+      PARAMS="$1"
+    fi
+    shift
+  done
+}
+
+function add_env {
+  if [ -z "$GROUP" ]; then
+    echo "Group cannot be empty!"
+    help
+  fi
+  if [ -z "$ENV_NAME" ]; then
+    echo "Name cannot be empty!"
+    help
+  fi
+  if [ -z "$HOST" ]; then
+    echo "Host cannot be empty!"
+    help
+  fi
+  if [ ! -z "`egrep \"\s${ENV_NAME}\s\" ${ENV_FILE_NAME}`" ]; then
+    echo "Entry for ${ENV_NAME} already exists!"
+    exit -4
+  fi
+  echo "${GROUP} ${ENV_NAME} ${HOST} ${USER} ${PORT} ${PARAMS}" >> ${ENV_FILE_NAME}
+  exit
+}
+
 if [ $# = 0 ]; then
   help
 fi
-
-PORT=22
-PARAMS=""
-PRINT=""
-PING=""
-ENV_FILE_NAME="${HOME}/bin/.env.srv"
 
 if [ ! -f "${ENV_FILE_NAME}" ]; then
   echo "Can't find configuration file: ${ENV_FILE_NAME}"
@@ -45,7 +104,11 @@ fi
 
 # iterate through parameters
 while [ $# -gt 0 ]; do
-  if [ "$1" = "-p" ]; then
+  if [ "$1" = "add" ]; then
+    shift
+    add_env_iterate $@
+    add_env
+  elif [ "$1" = "-p" ]; then
     PARAMS="true"
   elif [ "$1" = "print" ]; then
     if [ ! -z "${PING}" ]; then
