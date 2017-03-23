@@ -15,7 +15,6 @@ GROUP=""
 ENV_NAME=""
 USER=`whoami`
 HOST=""
-PORT=""
 PARAMS=""
 ENV_FILE_NAME="${HOME}/bin/.env.srv"
 
@@ -146,6 +145,7 @@ do
   ENTRY=(${ENV})
   if [ "${ENTRY[1]}" = "${ENV_NAME}" ]; then
     if [ ! -z "${ENTRY[4]}" ]; then
+      echo $PORT
       PORT=${ENTRY[4]}
     fi
     if [ ! -z "${PARAMS}" ]; then
