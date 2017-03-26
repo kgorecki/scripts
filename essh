@@ -3,9 +3,9 @@
 # TODO:
 # imrpove help
 # improve iterate through environments
-# make use of alternative env file possible
 # switch to use reasonable hosts format: user@hostname:port
 # improve checking if entry is present in env file
+# detect multiple entries with the same name
 
 PORT=22
 PARAMS=""
@@ -21,10 +21,14 @@ ENV_FILE_NAME="${HOME}/bin/.env.srv"
 function help {
   echo "Another layer added on top of ssh/ping for faster operation on known servers"
   echo "Usage:"
-  echo " $(basename $0) env_name [-p]"
-  echo " $(basename $0) print [env_name]"
-  echo " $(basename $0) ping env_name"
-  echo " $(basename $0) add -g group -n name -h hostname [-u username] [-p port] [-P params]"
+  echo " $(basename $0) env_name [-p] [-f filename]"
+  echo " $(basename $0) print [env_name] [-f filename]"
+  echo " $(basename $0) ping env_name [-f filename]"
+  echo " $(basename $0) add -g group -n name -h hostname [-u username] [-p port] [-P params] [-f filename]"
+  echo;
+  echo "Parameters:"
+  echo " -f filename - common, use alternative configuration file"
+  echo " -p          - connect, use of additional parameters specified in configuration file"
   echo;
   echo "Examples:"
   echo " $(basename $0) print home   - prints every entry for group 'home'"
@@ -96,11 +100,6 @@ if [ $# = 0 ]; then
   help
 fi
 
-if [ ! -f "${ENV_FILE_NAME}" ]; then
-  echo "Can't find configuration file: ${ENV_FILE_NAME}"
-  exit -1
-fi
-
 # iterate through parameters
 while [ $# -gt 0 ]; do
   if [ "$1" = "add" ]; then
@@ -121,6 +120,15 @@ while [ $# -gt 0 ]; do
       help
     fi
     PING="true"
+  elif [ "$1" = "-f" ]; then
+    shift
+    if [ ! -z "$1" ]; then
+      ENV_FILE_NAME="$1"
+      echo "Using configuration file: ${ENV_FILE_NAME}"
+    else
+      echo "Alternative configuration file not specified!"
+      help
+    fi
   elif [ "${ENV_NAME}" = "" ]; then
     ENV_NAME="$1"
   else
@@ -129,6 +137,11 @@ while [ $# -gt 0 ]; do
   fi
   shift
 done
+
+if [ ! -f "${ENV_FILE_NAME}" ]; then
+  echo "Can't find configuration file: ${ENV_FILE_NAME}"
+  exit -1
+fi
 
 if [ ! -z "${PRINT}" ]; then
   print_envs ${ENV_NAME}
@@ -145,7 +158,6 @@ do
   ENTRY=(${ENV})
   if [ "${ENTRY[1]}" = "${ENV_NAME}" ]; then
     if [ ! -z "${ENTRY[4]}" ]; then
-      echo $PORT
       PORT=${ENTRY[4]}
     fi
     if [ ! -z "${PARAMS}" ]; then
