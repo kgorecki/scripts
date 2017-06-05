@@ -3,6 +3,10 @@
 # TODO:
 # regenerate certificated if needed
 # normal arguments parsing
+# error message for certificates:
+# Error checking TLS connection: Error checking and/or regenerating the certs: There was an error validating certificates for host "192.168.99.100:2376": tls: DialWithDialer timed out
+# You can attempt to regenerate them using 'docker-machine regenerate-certs [name]'.
+# Be advised that this will trigger a Docker daemon restart which might stop running containers.
 
 function help
 {
@@ -27,6 +31,11 @@ if [ "${1}" = "help" ]; then
 fi
 
 if [ "${1}" != "" ]; then
+  if [ "${0}" != "-bash" ]; then
+    echo "It looks like you forgot to source file!"
+    echo "Help:"
+    help
+  fi
   echo 'eval "$(docker-machine env '${1}')"'
   eval "$(docker-machine env ${1})"
 else

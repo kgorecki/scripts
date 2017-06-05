@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # TODO:
-# imrpove help
+# improve help
 # improve iterate through environments
 # switch to use reasonable hosts format: user@hostname:port
 # improve checking if entry is present in env file
 # detect multiple entries with the same name
+# scp functionality
+# switch from group and name to "namespaces", like company:group:server
+#  essh would call first unique id
 
 PORT=22
 PARAMS=""
