@@ -9,6 +9,9 @@
 # scp functionality
 # switch from group and name to "namespaces", like company:group:server
 #  essh would call first unique id
+# add did you mean for example with edit distance
+# override environment settings with command line parameters
+# update .env.srv entries
 
 PORT=22
 PARAMS=""
