@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # TODO:
-# regenerate certificated if needed
+# regenerate certificates if needed
 # normal arguments parsing
 # error message for certificates:
 # Error checking TLS connection: Error checking and/or regenerating the certs: There was an error validating certificates for host "192.168.99.100:2376": tls: DialWithDialer timed out
 # You can attempt to regenerate them using 'docker-machine regenerate-certs [name]'.
 # Be advised that this will trigger a Docker daemon restart which might stop running containers.
+
+LOG_FILE="/tmp/.doev_logs_"`date +%Y%m%d%H%M%S`
 
 function help
 {
@@ -37,7 +39,19 @@ if [ "${1}" != "" ]; then
     help
   fi
   echo 'eval "$(docker-machine env '${1}')"'
+  touch ${LOG_FILE}
+  eval "$(docker-machine env ${1})" 2>&1 | tee -a ${LOG_FILE} #just for catching issues
   eval "$(docker-machine env ${1})"
+  TEST=`grep Host ${LOG_FILE}`
+  echo $TEST
+  rm ${LOG_FILE}
+  if [ ! -z "`echo $LOGS | grep regenerate-certs`" ]; then
+    echo "regenerating certificates"
+    echo "docker-machine regenerate-certs ${1}"
+    docker-machine regenerate-certs ${1}
+  elif [ ! -z "`echo $LOGS | grep exist`" ]; then
+    exit -1
+  fi
 else
   echo "Empty docker-machine name, listing machines"
   echo "For help type: $(basename $0) help"
@@ -51,10 +65,9 @@ KEY_VALUE=($ENV_RES)
 
 if [ "${1}" != "${KEY_VALUE[1]}" ]
 then
+  echo "docker-machine not set!"
   echo "parameter: _${1}_"
   echo "value: _${KEY_VALUE[1]}_"
-  echo "did you forgot to source file?"
-  echo "usage: . ${0} [machine_name]"
 else
   echo "using machine ${1}"
 fi
