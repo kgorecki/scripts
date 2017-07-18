@@ -1,9 +1,11 @@
 #!/bin/bash
 
+function colored() { printf "\e[$1m$2\e[0m"; } # $1 color number, $2 text
+
 for REMOTE in $(git remote)
 do
   COMMAND="git push ${REMOTE} $@"
-  echo ${COMMAND}
+  echo $(colored 33 ${COMMAND})
   eval ${COMMAND}
 done
 
