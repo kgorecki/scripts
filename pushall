@@ -11,12 +11,12 @@ function colored()
 
 REMOTES=$(git remote)
 
-echo "Found following remotes:"
-echo "${REMOTES}"
+echo "Found following remotes: `echo ${REMOTES} | tr '\r\n' ' '`"
 
 for REMOTE in ${REMOTES}
 do
   COMMAND="git push ${REMOTE} $@"
+  echo;
   echo $(colored 33 ${COMMAND})
   eval ${COMMAND}
 done
