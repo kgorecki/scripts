@@ -1,0 +1,59 @@
+#!/bin/bash
+
+function help {
+  echo "Script for writing multiple defaults in macos x"
+  echo "Usage:"
+  echo " $(basename $0) filename"
+  exit 1
+}
+
+function run {
+  if [ "$1" = "-p" ]; then
+    PRINT="-p"
+    shift
+  fi
+
+  if [ -z "$1" ]; then
+    echo "No command to run!"
+    exit 1
+  fi
+
+  if [ "${PRINT}" = "-p" ]; then
+    echo "writing:"
+    echo "$@"
+  fi
+
+  eval defaults write $@
+  RES=$? 
+  if [ ${RES} -ne 0 ]; then
+    ISSUES=$((ISSUES+1)) 
+    REPORT=${REPORT}'\n'"$@ exited with ${RES}"
+  else
+    PASSED=$((PASSED+1))
+  fi
+}
+
+if [ -z "$1" ]; then
+  help
+fi
+
+FILE_NAME="$1"
+REPORT=""
+ISSUES=0
+PASSED=0
+
+FILE=`grep "^[^#;]" ${FILE_NAME}`
+IFS=$'\n'
+ENTRIES=(${FILE})
+IFS=' '
+
+for ENTRY in "${ENTRIES[@]}"
+do
+  run ${ENTRY}
+done
+
+echo "Finished!"
+echo "Written: ${PASSED}"
+echo "Issues: ${ISSUES}"
+echo -e ${REPORT}
+
