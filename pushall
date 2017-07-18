@@ -1,8 +1,20 @@
 #!/bin/bash
 
-function colored() { printf "\e[$1m$2\e[0m"; } # $1 color number, $2 text
+function colored()
+{
+  # $1 color number, $@ text
+  COLOR=$1
+  shift
+  TEXT=$@
+  printf "\e[${COLOR}m${TEXT}\e[0m";
+}
 
-for REMOTE in $(git remote)
+REMOTES=$(git remote)
+
+echo "Found following remotes:"
+echo "${REMOTES}"
+
+for REMOTE in ${REMOTES}
 do
   COMMAND="git push ${REMOTE} $@"
   echo $(colored 33 ${COMMAND})
