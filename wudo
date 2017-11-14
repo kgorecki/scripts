@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+function help
+{
+  echo "Poor, but better than nothing, equivalent for sudo for Cygwin"
+  echo "Usage:"
+  echo " $(basename $0) {command} - run commang with administrator rights"
+  echo;
+  echo "Known issues:"
+  echo " Opens new session"
+  echo;
+  echo "Based on: https://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin"
+  exit 0
+}
+
+if [ "${1}" = "help" ]; then
+  help
+fi
+
+if uname -s | grep -i cygwin > /dev/null; then
+  cygstart --action=runas "$@"
+else
+  echo "You're not under Cygwin! Use sudo!";
+fi
