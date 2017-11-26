@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function help {
   echo "Script for writing multiple defaults in macos x"

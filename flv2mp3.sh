@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 for FILE in *.flv
 do
     echo -ne "Converting $FILE... "
