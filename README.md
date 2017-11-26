@@ -8,6 +8,7 @@ Most used stuff:
 essh - another layer added on top of ssh for faster operation on known servers  
 pushall - git push for or remotes
 rtmux - starts tmux (terminal multiplexer) with my favourite setup of windows/panes
+temp - shows CPU temperature
 wudo - poor sudo equivalent for Cygwin
 
 Some old/other stuff:  
