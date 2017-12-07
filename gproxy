@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# toggles proxy for git
+function help {
+  echo "Another way of changing proxy settings for git"
+  echo "Usage:"
+  echo " $(basename $0) - toggle proxy"
+  echo " $(basename $0) status - checks current proxy status"
+  echo " $(basename $0) [disable/enable] - disables/enables proxy"
+  echo " $(basename $0) add -g group -n name -h hostname [-u username] [-p port] [-P params] [-f filename]"
+  echo;
+  echo "Sample configuration file: .gproxy.cfg.sample"
+  exit 1
+}
+
+function enable_proxy {
+  if [ -z "$PADDR" ]; then
+    echo "PADDR variable is not set! Check .gproxy.cfg file!"
+    help;
+  fi
+  git config --global http.proxy $PADDR
+}
+
+function disable_proxy {
+  git config --global --unset http.proxy
+}
+
+# sets PADDR variable
+source ".gproxy.cfg"
+
+PROXY=$(git config --global -l | grep http.proxy)
+
+if [ "$1" = "status" ]; then
+  if [ -z "$PROXY" ]; then
+    echo "Proxy is disabled"
+  else
+    echo "Proxy is enabled"
+  fi
+  exit
+fi
+
+if [ "$1" = "help" ]; then
+  help;
+elif [ "$1" = "enable" -o "$1" = "on" ]; then
+  enable_proxy
+elif [ "$1" = "disable" -o "$1" = "off" ]; then
+  disable_proxy
+else
+  if [ -z "$PROXY" ]; then
+    enable_proxy
+  else
+    disable_proxy
+  fi
+fi
+
+$0 status
+
