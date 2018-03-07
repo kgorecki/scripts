@@ -6,7 +6,7 @@ dup - docker-compose build and up as I keep forgetting about rebuilding...
 
 Most used stuff:  
 essh - another layer added on top of ssh for faster operation on known servers  
-gproxy - changes proxy settings for git
+gproxy - changes proxy settings for git  
 pushall - git push for or remotes
 rtmux - starts tmux (terminal multiplexer) with my favourite setup of windows/panes
 temp - shows CPU temperature
