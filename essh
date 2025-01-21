@@ -45,6 +45,7 @@ function help {
   echo "Advantage over ~/.ssh/config or /etc/hosts - it's easier to store i.e. on Dropbox and use the same for every computer you use."
   echo "Default port - 22"
   echo "Default user - `whoami` - currently logged in"
+  echo "Config file location - ${ENV_FILE_NAME}"
   exit 1
 }
 
